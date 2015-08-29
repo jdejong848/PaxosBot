@@ -11,8 +11,11 @@ import java.util.Random;
 public class PaxosBot extends PircBot {
     Map diseaseList;
     Map generalList;
+    Map dualParamList;
     Skiddy sk;
 
+    String channel;
+    String auth;
 
     /**
      *
@@ -24,6 +27,8 @@ public class PaxosBot extends PircBot {
         this.init();
         this.setName("PaxosBot");
         this.setVerbose(true);
+        this.channel = channel;
+        this.auth = auth;
 
         try {
 
@@ -80,6 +85,13 @@ public class PaxosBot extends PircBot {
             }else{
                 sendMessage(channel, sender + diseaseList.get(command.toLowerCase()));
             }
+        }else if(dualParamList.containsKey(command.toLowerCase())){
+            if(messageArray.length > 1){
+                if(dualParamList.containsKey(command.toLowerCase() + " " + messageArray[1].toLowerCase()))
+                    sendMessage(channel, dualParamList.get(command.toLowerCase() + " " + messageArray[1].toLowerCase()).toString());
+            }else{
+                sendMessage(channel, dualParamList.get(command.toLowerCase()).toString());
+            }
         }
     }
 
@@ -110,6 +122,27 @@ public class PaxosBot extends PircBot {
 
     }
 
+    @Override
+    protected  void onDisconnect(){
+        try {
+
+            this.connect("irc.freenode.net", 6667, this.auth);
+            this.joinChannel("#" + this.channel);
+            this.sendMessage("#" + this.channel, "I'm Back!");
+
+
+        }catch(NickAlreadyInUseException e){
+            System.out.println("nick already in use");
+            e.printStackTrace();
+        }catch (IOException e){
+            System.out.println("ioexception error");
+            e.printStackTrace();
+        }catch(IrcException e){
+            System.out.println("ircexception error");
+            e.printStackTrace();
+        }
+    }
+
     /**
      *
      * @param channel
@@ -129,6 +162,8 @@ public class PaxosBot extends PircBot {
     private void init(){
         diseaseList = new HashMap<String, String>();
         generalList = new HashMap<String, String>();
+        dualParamList = new HashMap<String, String>();
+
         sk = new Skiddy();
 
         /**
@@ -142,10 +177,21 @@ public class PaxosBot extends PircBot {
          */
         generalList.put("!help", "Command List: !help");
         generalList.put("!goldenrule", "Don't bang crazy.");
+        generalList.put("!shiny","Find Glorious_Coffee a \"Kaylee.\"");
+        generalList.put("!penis", "get hard");
         //generalList.put("!grep","*sender* do you even grep?");
+
+        /**
+         * Initalize the double param list
+         */
+        dualParamList.put("!permit", "There is currently one permit available for request: \"idle\". Type \"!permit idle\" to make a request.");
+        dualParamList.put("!permit idle", "To request an idle permit, a 15074 permit is required.");
+        dualParamList.put("!permit 15074", "To request a 15074 permit, a firefly permit is required.");
+        dualParamList.put("!permit firefly", "To request a firefly permit, an idle permit is required.");
 
 
     }
+
 
     public String getRandomNick(){
         String sReturn = "";

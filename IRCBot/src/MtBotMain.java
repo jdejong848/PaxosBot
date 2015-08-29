@@ -4,7 +4,7 @@ import org.jibble.pircbot.*;
  */
 public class MtBotMain {
     public static void main(String[] args) {
-        PaxosBot bot = new PaxosBot("oswegoalumni", "", "I'm your friendly bot!");
+        PaxosBot bot = new PaxosBot("oswegoalumni", "dragon", "I'm your friendly bot!");
 
     }
 }
